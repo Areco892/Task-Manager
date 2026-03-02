@@ -94,9 +94,9 @@
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({title: taskTitle, completed: false})
                     });
-
                     const newTodo = await response.json();
-                    return newTodo;
+                    
+                    return newTodo.task;
                 } catch (err) {
                     console.error(err);
                 }

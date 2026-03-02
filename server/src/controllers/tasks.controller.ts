@@ -2,9 +2,11 @@ import type { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/AppError";
 import * as TaskService from "../services/tasks.service";
 
+const TEMP_USER_ID = 1;
+
 export async function getTasks(req: Request, res: Response, next: NextFunction) {
     try{
-        const tasks = await TaskService.getTasksService();
+        const tasks = await TaskService.getTasksService(TEMP_USER_ID);
         res.status(200).json(tasks);
     } catch(err) {
         console.error(err);
@@ -20,7 +22,7 @@ export async function getTask(req: Request, res: Response, next: NextFunction) {
             return;
         }
 
-        const task = await TaskService.getTaskByIdService(id);
+        const task = await TaskService.getTaskByIdService(id, TEMP_USER_ID);
         if (!task) {
             next(new AppError(404, "Task Not Found"));
             return;
@@ -35,7 +37,7 @@ export async function getTask(req: Request, res: Response, next: NextFunction) {
 export async function createTask(req: Request, res: Response, next: NextFunction) {
     try {
         const { title } = req.body;
-        const newTask = await TaskService.createTaskService(title);
+        const newTask = await TaskService.createTaskService(title, TEMP_USER_ID);
         res.status(201).json({ message: "Task Created", task: newTask });
     } catch (error) {
         console.error(error);
@@ -52,7 +54,7 @@ export async function updateTask(req: Request, res: Response, next: NextFunction
         }
 
         const { title, completed } = req.body;
-        const updatedTask = await TaskService.updateTaskService(id, title, completed);
+        const updatedTask = await TaskService.updateTaskService(id, title, completed, TEMP_USER_ID);
         if (!updatedTask) {
             next(new AppError(404, "Task Not Found"));
             return;
@@ -73,7 +75,7 @@ export async function deleteTask(req: Request, res: Response, next: NextFunction
             return;
         }
 
-        const deletedTask = await TaskService.deleteTaskService(id);
+        const deletedTask = await TaskService.deleteTaskService(id, TEMP_USER_ID);
         if (!deletedTask) {
             next(new AppError(404, "Task Not Found"));
             return;
