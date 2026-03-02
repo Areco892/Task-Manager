@@ -1,4 +1,5 @@
 import {Request, Response, NextFunction} from "express";
+import { AppError } from "../errors/AppError";
 
 // Request logger
 export const logger = (req: Request, res: Response, next: NextFunction) => {
@@ -21,9 +22,18 @@ export const validator = (req: Request, res: Response, next: NextFunction) => {
     if (!title) {
         res.status(400).json({ message: "Missing title" });
         return;
-    } else if (!description) {
-        res.status(400).json({ message: "Missing description" });
-        return;
     }
     next();
+};
+
+// Route Not Found
+export const routeNotFound = (req: Request, res: Response) => {
+    res.status(404).json({ message: "Route Not Found" });
+};
+
+// Error Handler
+export const errorHandler = (err: Error | AppError, req: Request, res: Response, next: NextFunction) => {
+    const statusCode = (err as AppError).statusCode || 500;
+    console.error(`[ERROR] ${err.message}`);
+    res.status(statusCode).json({ message: err.message });
 };
